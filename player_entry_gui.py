@@ -1,5 +1,5 @@
 from tkinter import *
-from typing import List, Tuple, Any
+from typing import List, Tuple, Union
 import sys
 
 class Player_Entry_GUI:
@@ -57,7 +57,7 @@ class Player_Entry_GUI:
             player_id_entry.bind('<Return>', lambda event: self.submit_player_id(num, color))
             codename_entry = Entry(new_player_entry, bg='lightgray', textvariable=player_name, relief=FLAT, name="codename")
             codename_entry.pack(side=LEFT, padx=5)
-            codename_entry.bind('<Return>', lambda event: self.submit_codename())
+            codename_entry.bind('<Return>', lambda event: self.submit_codename(player_name.get(), num, color))
             self.red_team.append((player_name, is_player, player_id))
 
         #Add green player
@@ -69,10 +69,11 @@ class Player_Entry_GUI:
             player_id_entry.bind('<Return>', lambda event: self.submit_player_id(num, color))
             codename_entry = Entry(new_player_entry, bg='lightgray', textvariable=player_name, relief=FLAT, name="codename")
             codename_entry.pack(side=LEFT, padx=5)
-            codename_entry.bind('<Return>', lambda event: self.submit_codename())
+            codename_entry.bind('<Return>', lambda event: self.submit_codename(player_name.get(), num, color))
             self.green_team.append((player_name, is_player, player_id))
     
     def move_up(self) -> None:
+        self.root.focus()
         if (int(self.selected_player / 2) - 1 > -1):
             #move up on red side if red
             if (self.selected_player % 2 == 0):
@@ -85,6 +86,7 @@ class Player_Entry_GUI:
             self.selected_player -= 2
     
     def move_down(self) -> None:
+        self.root.focus()
         if (self.selected_player + 2 < 39):
             self.selected_player += 2
         if (int(self.selected_player / 2) - 1 > -1):
@@ -98,55 +100,75 @@ class Player_Entry_GUI:
                 self.root.nametowidget(".player_entry.teams.green_team.green_" + str(int(self.selected_player / 2) - 1) + ".select_space").config(image="", text="  ")
 
     def move_left(self) -> None:
+        self.root.focus()
         #move arrow to left side
         if ((self.selected_player - 1) % 2 == 0):
             self.root.nametowidget(".player_entry.teams.green_team.green_" + str(int(self.selected_player / 2)) + ".select_space").config(image="", text="  ")
-            self.root.nametowidget(".player_entry.teams.red_team.red_" + str(int(self.selected_player / 2)) + ".select_space").config(image=self.arrow, text="  ")
-            self.selected_player -= 1
+            red_player:int = 0
+            for player_num in range(len(self.red_team)):
+                if (self.red_team[player_num][1].get() == False):
+                    red_player = player_num
+                    break
+            self.root.nametowidget(".player_entry.teams.red_team.red_" + str(red_player) + ".select_space").config(image=self.arrow, text="  ")
+            self.selected_player = red_player * 2
 
     def move_right(self) -> None:
+        self.root.focus()
         #move arrow to right side
         if ((self.selected_player + 1) % 2 != 0):
             self.root.nametowidget(".player_entry.teams.red_team.red_" + str(int(self.selected_player / 2)) + ".select_space").config(image="", text="  ")
-            self.root.nametowidget(".player_entry.teams.green_team.green_" + str(int(self.selected_player / 2)) + ".select_space").config(image=self.arrow, text="  ")
-            self.selected_player += 1
+            green_player:int = 0
+            for player_num in range(len(self.green_team)):
+                if (self.green_team[player_num][1].get() == False):
+                    green_player = player_num
+                    break
+            self.root.nametowidget(".player_entry.teams.green_team.green_" + str(green_player) + ".select_space").config(image=self.arrow, text="  ")
+            self.selected_player = green_player * 2 + 1
 
-    #Placeholder
-    def query_codename_database(self, codename:str) -> Any:
+    #Placeholder to ask database for name
+    def query_codename_database(self, codename:str) -> Union[str, None]:
         return None
+    
+    #Placeholder to tell database about new codename
+    def submit_codename(self, codename:str, num:int, color:str) -> None:
+        self.move_down()
 
+    #Submit player id to database to find out if codename, then enter codename if not
     def submit_player_id(self, num:int, color:str) -> None:
         if (color == 'red4'):
-            red_codename:Any = self.query_codename_database(self.red_team[num][2].get())
+            red_codename:Union[str, None] = self.query_codename_database(self.red_team[num][2].get())
             if (red_codename == None):
                 self.root.nametowidget(".player_entry.teams.red_team.red_" + str(int(self.selected_player / 2)) + ".codename").focus()
                 return None
             self.red_team[num][0].set(str(red_codename))
         if (color == 'green4'):
-            green_codename:Any = self.query_codename_database(self.red_team[num][2].get())
+            green_codename:Union[str, None] = self.query_codename_database(self.red_team[num][2].get())
             if (green_codename == None):
                 self.root.nametowidget(".player_entry.teams.green_team.green_" + str(int(self.selected_player / 2)) + ".codename").focus()
                 return None
             self.green_team[num][0].set(str(green_codename))
-    
-    def submit_codename(self) -> None:
-        self.root.focus()
+        self.move_down()
 
     #Auto-check next player and select field to input name by pressing <Insert>
     def insert_player(self) -> None:
         #if red
         if (self.selected_player % 2 == 0):
-            self.red_team[int(self.selected_player / 2)][1].set(True)
-            self.root.nametowidget(".player_entry.teams.red_team.red_" + str(int(self.selected_player / 2)) + ".player_id").focus()
+            if (self.red_team[int(self.selected_player / 2)][1].get() == True):
+                self.root.nametowidget(".player_entry.teams.red_team.red_" + str(int(self.selected_player / 2)) + ".codename").focus()
+            elif (self.red_team[int(self.selected_player / 2) - 1][1].get() == True or self.selected_player == 0):
+                self.red_team[int(self.selected_player / 2)][1].set(True)
+                self.root.nametowidget(".player_entry.teams.red_team.red_" + str(int(self.selected_player / 2)) + ".player_id").focus()
 
         #if green
         else:
-            self.green_team[int(self.selected_player / 2)][1].set(True)
-            self.root.nametowidget(".player_entry.teams.green_team.green_" + str(int(self.selected_player / 2)) + ".player_id").focus()
+            if (self.green_team[int(self.selected_player / 2)][1].get() == True):
+                self.root.nametowidget(".player_entry.teams.green_team.green_" + str(int(self.selected_player / 2)) + ".codename").focus()
+            elif (self.green_team[int(self.selected_player / 2) - 1][1].get() == True or self.selected_player == 1):
+                self.green_team[int(self.selected_player / 2)][1].set(True)
+                self.root.nametowidget(".player_entry.teams.green_team.green_" + str(int(self.selected_player / 2)) + ".player_id").focus()
 
     #Delete last player and select field of previous player name by pressing <Delete>
     def delete_player(self) -> None:
-        self.root.focus()
         #if red
         if (self.selected_player % 2 == 0):
             self.red_team[int(self.selected_player / 2)][0].set("")
@@ -158,6 +180,8 @@ class Player_Entry_GUI:
             self.green_team[int(self.selected_player / 2)][0].set("")
             self.green_team[int(self.selected_player / 2)][1].set(False)
             self.green_team[int(self.selected_player / 2)][2].set("")
+
+        self.move_up()
 
     #Placeholder for "Edit Game" function
     def edit_game(self) -> None:
