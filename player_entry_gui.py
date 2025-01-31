@@ -1,7 +1,6 @@
 from tkinter import *
 from typing import List, Tuple, Union, Any
 import sys
-from time import sleep
 
 class Player_Entry_GUI:
     def __init__(self) -> None:
