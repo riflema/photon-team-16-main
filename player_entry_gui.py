@@ -13,7 +13,7 @@ class Player_Entry_GUI:
         self.equiproot:Any = ''
 
         self.root.title('Entry Terminal')
-        self.root.geometry("960x675")
+        self.root.geometry("960x575")
         self.root.configure(bg='black')
 
         self.create_main()
