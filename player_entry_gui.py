@@ -9,7 +9,7 @@ class Player_Entry_GUI:
         self.red_team:List[Tuple[StringVar, BooleanVar, StringVar, StringVar]] = []
         self.green_team:List[Tuple[StringVar, BooleanVar, StringVar, StringVar]] = []
         self.selected_player:int = 0
-        self.arrow = PhotoImage(file="player_select_arrow.png")
+        self.arrow = PhotoImage(file="gui_sprites/player_select_arrow.png")
         self.equiproot:Any = ''
 
         self.root.title('Entry Terminal')
