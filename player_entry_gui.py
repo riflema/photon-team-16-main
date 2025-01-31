@@ -12,7 +12,6 @@ class Player_Entry_GUI:
         self.equiproot:Any = ''
 
         self.root.title('Entry Terminal')
-        self.root.geometry("960x575")
         self.root.configure(bg='black')
 
         self.create_main()
@@ -53,24 +52,24 @@ class Player_Entry_GUI:
                 Label(new_player_entry, bg='red4', image=self.arrow, name="select_space").pack(side=LEFT)
             else:
                 Label(new_player_entry, bg='red4', text= "  ", name="select_space").pack(side=LEFT)
-            Checkbutton(new_player_entry, text=num_str, bg=color, variable=is_player, justify=LEFT, onvalue=1, offvalue=0).pack(side=LEFT)
+            Checkbutton(new_player_entry, text=num_str, bg=color, borderwidth=0, highlightthickness=0, variable=is_player, justify=LEFT, onvalue=1, offvalue=0).pack(side=LEFT)
             player_id_entry = Entry(new_player_entry, bg='lightgray', textvariable=player_id, width=15, relief=FLAT, name="player_id")
             player_id_entry.pack(side=LEFT)
             player_id_entry.bind('<Return>', lambda event: self.submit_player_id(num, color))
             codename_entry = Entry(new_player_entry, bg='lightgray', textvariable=player_name, relief=FLAT, name="codename")
-            codename_entry.pack(side=LEFT, padx=5)
+            codename_entry.pack(side=LEFT, padx=5, pady=2)
             codename_entry.bind('<Return>', lambda event: self.submit_codename(player_name.get(), player_id.get(), color, num))
             self.red_team.append((player_name, is_player, player_id, equip_id))
 
         #Add green player
         if (color == 'green4'):
             Label(new_player_entry, bg='green4', text= "  ", name="select_space").pack(side=LEFT)
-            Checkbutton(new_player_entry, text=num_str, bg=color, variable=is_player, onvalue=1, offvalue=0).pack(side=LEFT)
+            Checkbutton(new_player_entry, text=num_str, bg=color, borderwidth=0, highlightthickness=0, variable=is_player, onvalue=1, offvalue=0).pack(side=LEFT)
             player_id_entry = Entry(new_player_entry, bg='lightgray', textvariable=player_id, width=15, relief=FLAT, name="player_id")
             player_id_entry.pack(side=LEFT)
             player_id_entry.bind('<Return>', lambda event: self.submit_player_id(num, color))
             codename_entry = Entry(new_player_entry, bg='lightgray', textvariable=player_name, relief=FLAT, name="codename")
-            codename_entry.pack(side=LEFT, padx=5)
+            codename_entry.pack(side=LEFT, padx=5, pady=2)
             codename_entry.bind('<Return>', lambda event: self.submit_codename(player_name.get(), player_id.get(), color, num))
             self.green_team.append((player_name, is_player, player_id, equip_id))
     
@@ -227,7 +226,6 @@ class Player_Entry_GUI:
 
     def get_equipment_id(self, num:int, color:str) -> None:
         self.equiproot = Toplevel(self.root)
-        #self.equiproot.geometry("300x150")
         self.equiproot.title("Equipment ID Entry")
         equip_frame = Frame(self.equiproot, bg='black')
         equip_label = Label(equip_frame, text="Enter integer equipment id:", bg='black', fg='lime')
@@ -293,7 +291,8 @@ class Player_Entry_GUI:
         self.root.bind('<F12>', lambda event: self.clear_game())
 
         #Create label showing instructions
-        instructions = Label(player_entry, text="<Del> to Delete Player, <Ins> to Manually Insert, or edit codename", width=1000, bg='lightgray', fg='black')
+        options_width:int = int(self.root.winfo_reqwidth() / 1.35)
+        instructions = Label(player_entry, text="<Del> to Delete Player, <Ins> to Manually Insert, or edit codename", width=options_width, bg='lightgray', fg='black')
         self.root.bind('<Insert>', lambda event: self.insert_player())
         self.root.bind('<Delete>', lambda event: self.delete_player())
         self.root.bind('<Up>', lambda event: self.move_up())
@@ -301,7 +300,7 @@ class Player_Entry_GUI:
         self.root.bind('<Left>', lambda event: self.move_left())
         self.root.bind('<Right>', lambda event: self.move_right())
 
-        #Pack all widgets
+        #Packing widgets
         game_mode.pack()
         option_buttons.pack()
         edit.pack(side=LEFT)
