@@ -5,7 +5,8 @@ import sys
 class Player_Entry_GUI:
     def __init__(self) -> None:
         self.root = Tk()
-        self.red_team:List[Tuple[StringVar, BooleanVar, StringVar, StringVar]] = []
+                               #codename, player exist?, player id, equipment id
+        self.red_team:List[Tuple[StringVar, BooleanVar, StringVar, StringVar]] = [] #Each player is index in list
         self.green_team:List[Tuple[StringVar, BooleanVar, StringVar, StringVar]] = []
         self.selected_player:int = 0
         self.arrow = PhotoImage(file="gui_sprites/player_select_arrow.png")
@@ -130,7 +131,7 @@ class Player_Entry_GUI:
     def query_codename_database(self, player_id:int) -> Union[str, None]:
         return None
     
-    #Placeholder to tell database about new codename
+    #Placeholder to tell database about new codename/move down to next player and ask for equipment id
     def submit_codename(self, codename:str, player_id:str, color:str, num:int) -> None:
         self.move_down()
         self.get_equipment_id(num, color)
@@ -224,6 +225,7 @@ class Player_Entry_GUI:
         for red_player in range(len(self.red_team)):
             self.delete_player()
 
+    #Create Equipment ID entry GUI
     def get_equipment_id(self, num:int, color:str) -> None:
         self.equiproot = Toplevel(self.root)
         self.equiproot.title("Equipment ID Entry")
@@ -238,6 +240,7 @@ class Player_Entry_GUI:
         equip_id:str = ""
         equip_entry.bind('<Return>', lambda event: self.equipment_id_set(num, color, equip_id_str.get()))
 
+    #Set equipment ID in lists, then destroy GUI/Should also send equipment id to database
     def equipment_id_set(self, num:int, color:str, equip_id:str) -> None:
         if (color == 'red4'):
             self.red_team[num][3].set(str(int(equip_id)))
