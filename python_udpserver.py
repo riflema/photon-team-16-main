@@ -44,9 +44,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)         # Create a UDP s
 FORMAT = 'utf-8'
 
 
-# bind socket
-def sockBind(ip, port):
-    sock.bind((ip, port))
+
 
 # thread action: handle_client() - wait for mesages from clients
 def handle_client():
@@ -57,7 +55,7 @@ def handle_client():
 
 
 def start(ip = "127.0.0.1", port = 7501):
-    sockBind(ip, port)                                      # bind socket
+    sock.bind((ip, port))                                      # bind socket
     print(f"Listening for UDP packets on {ip}:{port}")
 
     # Receive data from client, but in a thread
