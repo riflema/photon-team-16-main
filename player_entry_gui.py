@@ -325,9 +325,3 @@ class Player_Entry_GUI:
     ### Establish UDP Binding with specific IP and Port ###
     def create_socket(self, ip = "127.0.0.1", port = 7500) -> None:
         python_udpserver.start(ip, port)
-        
-
-player_entry_gui = Player_Entry_GUI()
-
-
-
