@@ -315,5 +315,3 @@ class Player_Entry_GUI:
         sync.pack(padx=80, side=LEFT)
         clear.pack(side=LEFT)
         instructions.pack()
-
-player_entry_gui = Player_Entry_GUI()
