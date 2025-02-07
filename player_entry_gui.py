@@ -1,8 +1,7 @@
 from tkinter import *
 from typing import List, Tuple, Union, Any
 import sys
-from udp_files import python_udpserver
-from udp_files import python_udpclient
+from udp_files import python_udpclient#, python_udpserver
 
 
 class Player_Entry_GUI:
@@ -323,5 +322,6 @@ class Player_Entry_GUI:
         instructions.pack()
 
     ### Establish UDP Binding with specific IP and Port ###
-    def create_socket(self, ip = "127.0.0.1", port = 7500) -> None:
-        python_udpserver.start(ip, port)
+    def create_socket(self, ip:str = "127.0.0.1", port:int = 7500) -> None:
+        #python_udpserver.start(ip, port)
+        pass
