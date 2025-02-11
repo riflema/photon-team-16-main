@@ -1,7 +1,7 @@
 # photon-main
 Main software for Photon Laser Tag
 
-To start Photon Laser Tag, simply run ```player_entry_gui.py```
+To start Photon Laser Tag, simply run ```run.bash```
 
 ---
 ### Team Members:
