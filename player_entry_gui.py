@@ -1,7 +1,8 @@
 from tkinter import *
 from typing import List, Tuple, Union, Any
 import sys
-from udp_files import python_udpclient#, python_udpserver
+from udp_files import python_udpserver
+from udp_files import python_udpclient
 
 
 class Player_Entry_GUI:
@@ -20,8 +21,6 @@ class Player_Entry_GUI:
         self.create_main()
 
         self.root.mainloop()
-
-        self.create_socket()
 
     def quit(self) -> None:
         sys.exit()
@@ -203,6 +202,7 @@ class Player_Entry_GUI:
     #Placeholder for "Start Game" function
     def start_game(self) -> None:
         print("Start game")
+        python_udpserver.start()
         python_udpclient.sendMessage("202")
 
     #Placeholder for "Preentered Games" function
@@ -324,8 +324,3 @@ class Player_Entry_GUI:
         sync.pack(padx=80, side=LEFT)
         clear.pack(side=LEFT)
         instructions.pack()
-
-    ### Establish UDP Binding with specific IP and Port ###
-    def create_socket(self, ip:str = "127.0.0.1", port:int = 7500) -> None:
-        #python_udpserver.start(ip, port)
-        pass
