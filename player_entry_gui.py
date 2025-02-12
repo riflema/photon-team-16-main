@@ -251,6 +251,11 @@ class Player_Entry_GUI:
             self.red_team[num][3].set(str(int(equip_id)))
         if (color == 'green4'):
             self.green_team[num][3].set(str(int(equip_id)))
+        
+        # Send the equipment code to the server
+        message = f"Equipment ID {equip_id} set for player {num} on {color} team"
+        python_udpclient.sendMessage(message)
+
         self.equiproot.destroy()
 
     ###Player Entry Screen###
