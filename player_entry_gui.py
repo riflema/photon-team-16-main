@@ -13,6 +13,8 @@ class Player_Entry_GUI:
         self.selected_player:int = 0
         self.arrow = PhotoImage(file="gui_sprites/player_select_arrow.png")
         self.equiproot:Any = ''
+        self.iproot:Any = ''
+        self.ip = "127.0.0.1"
 
         self.root.title('Entry Terminal')
         self.root.configure(bg='black')
@@ -202,7 +204,27 @@ class Player_Entry_GUI:
     def start_game(self) -> None:
         print("Start game")
         python_udpserver.start()
-        python_udpclient.sendMessage("202")
+        python_udpclient.sendMessage("202", self.ip)
+
+    #Create window to enter new IP
+    def create_ip_window(self) -> None:
+        print("Change ip")
+        self.iproot = Toplevel(self.root)
+        self.iproot.title("New IP Entry")
+        ip_frame = Frame(self.iproot, bg='black')
+        ip_label = Label(ip_frame, text="Enter new socket IP:", bg='black', fg='lime')
+        ip_str = StringVar()
+        ip_entry = Entry(ip_frame, textvariable=ip_str, bg='lightgray', relief=FLAT)
+        ip_frame.pack()
+        ip_label.pack(side=LEFT)
+        ip_entry.pack(side=LEFT)
+        ip_entry.focus()
+        ip_entry.bind('<Return>', lambda event: self.ip_set(ip_str.get()))
+
+    #Change socket IP
+    def ip_set(self, new_ip:str) -> None:
+        self.ip = new_ip
+        self.iproot.destroy()
 
     #Placeholder for "Preentered Games" function
     def preentered_games(self) -> None:
@@ -241,7 +263,6 @@ class Player_Entry_GUI:
         equip_label.pack(side=LEFT)
         equip_entry.pack(side=LEFT)
         equip_entry.focus()
-        equip_id:str = ""
         equip_entry.bind('<Return>', lambda event: self.equipment_id_set(num, color, equip_id_str.get()))
 
     #Set equipment ID in lists, then destroy GUI/Should also send equipment id to database
@@ -252,7 +273,7 @@ class Player_Entry_GUI:
             self.green_team[num][3].set(str(int(equip_id)))
         
                 # Send the equipment code to the server
-        python_udpclient.sendMessage(equip_id, "127.0.0.1", 7500)
+        python_udpclient.sendMessage(equip_id, self.ip, 7500)
         
         self.equiproot.destroy()
 
@@ -290,6 +311,8 @@ class Player_Entry_GUI:
         self.root.bind('<F2>', lambda event: self.game_parameters())
         start = Button(option_buttons, text='F3' + '\n' + 'Start' + '\n' + 'Game', width=10, height=5, bg='black', fg='lime', command=self.start_game)
         self.root.bind('<F3>', lambda event: self.start_game())
+        change_ip = Button(option_buttons, text='F4' + '\n' + 'Change' + '\n' + 'Socket IP', width=10, height=5, bg='black', fg='lime', command=self.create_ip_window)
+        self.root.bind('<F4>', lambda event: self.create_ip_window())
         preentered = Button(option_buttons, text='F5' + '\n' + 'PreEntered' + '\n' + 'Games', width=10, height=5, bg='black', fg='lime', command=self.preentered_games)
         self.root.bind('<F5>', lambda event: self.preentered_games())
         f7 = Button(option_buttons, text='F7', width=10, height=5, bg='black', fg='lime', command=self.f7_func)
@@ -317,7 +340,8 @@ class Player_Entry_GUI:
         edit.pack(side=LEFT)
         param.pack(side=LEFT)
         start.pack(side=LEFT)
-        preentered.pack(padx=80, side=LEFT)
+        change_ip.pack(side=LEFT)
+        preentered.pack(padx=(0, 80), side=LEFT)
         f7.pack(side=LEFT)
         view.pack(side=LEFT)
         sync.pack(padx=80, side=LEFT)
