@@ -203,7 +203,7 @@ class Player_Entry_GUI:
     #Placeholder for "Start Game" function
     def start_game(self) -> None:
         print("Start game")
-        python_udpserver.start()
+        python_udpserver.start(self.ip)
         python_udpclient.sendMessage("202", self.ip)
 
     #Create window to enter new IP
