@@ -149,7 +149,7 @@ class Player_Entry_GUI:
 
             cursor.execute('''
                 INSERT INTO players (id, codename)
-                VALUES (%d, %s);
+                VALUES (%s, %s);
             ''', (player_id, codename))
             
             cursor.commit()
@@ -173,13 +173,13 @@ class Player_Entry_GUI:
             version = cursor.fetchone()
             print(f"Connected to - {version}")
 
-            cursor.execute('''SELECT * FROM players WHERE id = (%d);
-            ''', (player_id))
+            cursor.execute('''SELECT * FROM players WHERE id = (%s);
+            ''', (player_id,))
             player = cursor.fetchone()
 
-            if (player != None)
-                return player[1]
-            else
+            if (player != None):
+                return str(player[1])
+            else:
                 return None
 
         except Exception as error:
