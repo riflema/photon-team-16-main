@@ -2,7 +2,16 @@ from tkinter import *
 from typing import List, Tuple, Union, Any
 import sys
 from udp_files import python_udpserver, python_udpclient
+import psycopg2
+from psycopg2 import sql
 
+connection_params = {
+    'dbname': 'photon',
+    'user': 'student',
+    #'password': 'student',
+    #'host': 'localhost',
+    #'port': '5432'
+}
 
 class Player_Entry_GUI:
     def __init__(self) -> None:
@@ -131,12 +140,64 @@ class Player_Entry_GUI:
             self.root.nametowidget(".player_entry.teams.green_team.green_" + str(green_player) + ".select_space").config(image=self.arrow, text="")
             self.selected_player = green_player * 2 + 1
 
+    def send_to_database(self, player_id:int, codename:str) -> None:
+        try:
+            conn = psycopg2.connect(**connection_params)
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT version();")
+            version = cursor.fetchone()
+            print(f"Connected to - {version}")
+
+            cursor.execute('''
+                INSERT INTO players (id, codename)
+                VALUES (%s, %s);
+            ''', (player_id, codename))
+            
+            conn.commit()
+        except Exception as error:
+            print(f"Error connecting to PostgreSQL database: {error}")
+
+        finally:
+            # Close the cursor and connection
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
     #Placeholder to ask database for name
     def query_codename_database(self, player_id:int) -> Union[str, None]:
+        try:
+            conn = psycopg2.connect(**connection_params)
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT version();")
+            version = cursor.fetchone()
+            print(f"Connected to - {version}")
+
+            cursor.execute('''SELECT * FROM players WHERE id = (%s);
+            ''', (player_id,))
+            player = cursor.fetchone()
+
+            if (player != None):
+                return str(player[1])
+            else:
+                return None
+
+        except Exception as error:
+            print(f"Error connecting to PostgreSQL database: {error}")
+
+        finally:
+            # Close the cursor and connection
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
         return None
     
     #Placeholder to tell database about new codename/move down to next player and ask for equipment id
     def submit_codename(self, codename:str, player_id:str, color:str, num:int) -> None:
+        self.send_to_database(int(player_id), codename)
         self.move_down()
         self.get_equipment_id(num, color)
 
