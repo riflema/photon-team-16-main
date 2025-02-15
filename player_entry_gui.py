@@ -152,7 +152,7 @@ class Player_Entry_GUI:
                 VALUES (%s, %s);
             ''', (player_id, codename))
             
-            cursor.commit()
+            conn.commit()
         except Exception as error:
             print(f"Error connecting to PostgreSQL database: {error}")
 
