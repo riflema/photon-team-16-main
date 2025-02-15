@@ -140,6 +140,7 @@ class Player_Entry_GUI:
             self.root.nametowidget(".player_entry.teams.green_team.green_" + str(green_player) + ".select_space").config(image=self.arrow, text="")
             self.selected_player = green_player * 2 + 1
 
+    #Send new name to database
     def send_to_database(self, player_id:int, codename:str) -> None:
         try:
             conn = psycopg2.connect(**connection_params)
@@ -165,7 +166,7 @@ class Player_Entry_GUI:
             if conn:
                 conn.close()
 
-    #Placeholder to ask database for name
+    #Ask database for name and return it if it exists
     def query_codename_database(self, player_id:int) -> Union[str, None]:
         try:
             conn = psycopg2.connect(**connection_params)
@@ -195,7 +196,7 @@ class Player_Entry_GUI:
                 conn.close()
         return None
     
-    #Placeholder to tell database about new codename/move down to next player and ask for equipment id
+    #Tell database about new codename/move down to next player and ask for equipment id
     def submit_codename(self, codename:str, player_id:str, color:str, num:int) -> None:
         self.send_to_database(int(player_id), codename)
         self.move_down()
@@ -216,6 +217,7 @@ class Player_Entry_GUI:
                 return None
             self.green_team[num][0].set(str(green_codename))
         self.move_down()
+        self.get_equipment_id(num, color)
 
     #Auto-check next player and select field to input name by pressing <Insert>
     def insert_player(self) -> None:
@@ -252,6 +254,32 @@ class Player_Entry_GUI:
             self.green_team[int(self.selected_player / 2)][3].set("")
 
         self.move_up()
+
+    #Create Equipment ID entry GUI
+    def get_equipment_id(self, num:int, color:str) -> None:
+        self.equiproot = Toplevel(self.root)
+        self.equiproot.title("Equipment ID Entry")
+        equip_frame = Frame(self.equiproot, bg='black')
+        equip_label = Label(equip_frame, text="Enter integer equipment id:", bg='black', fg='lime')
+        equip_id_str = StringVar()
+        equip_entry = Entry(equip_frame, textvariable=equip_id_str, bg='lightgray', relief=FLAT)
+        equip_frame.pack()
+        equip_label.pack(side=LEFT)
+        equip_entry.pack(side=LEFT)
+        equip_entry.focus()
+        equip_entry.bind('<Return>', lambda event: self.equipment_id_set(num, color, equip_id_str.get()))
+
+    #Set equipment ID in lists, then destroy GUI/Should also send equipment id to database
+    def equipment_id_set(self, num:int, color:str, equip_id:str) -> None:
+        if (color == 'red4'):
+            self.red_team[num][3].set(str(int(equip_id)))
+        if (color == 'green4'):
+            self.green_team[num][3].set(str(int(equip_id)))
+        
+                # Send the equipment code to the server
+        python_udpclient.sendMessage(equip_id, self.ip, 7500)
+        
+        self.equiproot.destroy()
 
     #Placeholder for "Edit Game" function
     def edit_game(self) -> None:
@@ -311,32 +339,6 @@ class Player_Entry_GUI:
         self.move_left()
         for red_player in range(len(self.red_team)):
             self.delete_player()
-
-    #Create Equipment ID entry GUI
-    def get_equipment_id(self, num:int, color:str) -> None:
-        self.equiproot = Toplevel(self.root)
-        self.equiproot.title("Equipment ID Entry")
-        equip_frame = Frame(self.equiproot, bg='black')
-        equip_label = Label(equip_frame, text="Enter integer equipment id:", bg='black', fg='lime')
-        equip_id_str = StringVar()
-        equip_entry = Entry(equip_frame, textvariable=equip_id_str, bg='lightgray', relief=FLAT)
-        equip_frame.pack()
-        equip_label.pack(side=LEFT)
-        equip_entry.pack(side=LEFT)
-        equip_entry.focus()
-        equip_entry.bind('<Return>', lambda event: self.equipment_id_set(num, color, equip_id_str.get()))
-
-    #Set equipment ID in lists, then destroy GUI/Should also send equipment id to database
-    def equipment_id_set(self, num:int, color:str, equip_id:str) -> None:
-        if (color == 'red4'):
-            self.red_team[num][3].set(str(int(equip_id)))
-        if (color == 'green4'):
-            self.green_team[num][3].set(str(int(equip_id)))
-        
-                # Send the equipment code to the server
-        python_udpclient.sendMessage(equip_id, self.ip, 7500)
-        
-        self.equiproot.destroy()
 
     ###Player Entry Screen###
     def create_main(self) -> None:
