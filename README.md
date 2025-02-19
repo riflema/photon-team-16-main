@@ -1,7 +1,14 @@
 # photon-main
 Main software for Photon Laser Tag
 
-To start Photon Laser Tag, simply run ```run.bash```
+To start Photon Laser Tag,
+1. Make sure you have Python installed
+2. Install pip with ```sudo apt install python3-pip```
+3. Install mypy with ```python3 -m pip install --user mypy```
+4. Install tkinter with ```sudo apt-get install python3-tk```
+5. Install PIL with ```pip install --user pillow```
+6. Install the Python Post-Gre SQL library with ```pip install --user psycopg2-binary```
+7. Navigate to the program folder in terminal and run the program with ```sh ./run.bash```
 
 ---
 ### Team Members:
