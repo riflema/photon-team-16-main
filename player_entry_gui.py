@@ -2,6 +2,7 @@ from tkinter import *
 from typing import List, Tuple, Union, Any
 import sys
 from udp_files import python_udpserver, python_udpclient
+from game_action_gui import Game_Action_GUI as Game_Action_GUI
 import psycopg2
 from psycopg2 import sql
 
@@ -294,6 +295,14 @@ class Player_Entry_GUI:
         print("Start game")
         python_udpserver.start(self.ip)
         python_udpclient.sendMessage("202", self.ip)
+        self.root.destroy()
+        red_list:List[str] = []
+        for player in range(len(self.red_team)):
+            red_list.append(self.red_team[player][0].get())
+        green_list:List[str] = []
+        for player in range(len(self.green_team)):
+            green_list.append(self.green_team[player][0].get())
+        game_action_gui = Game_Action_GUI(red_list, green_list)
 
     #Create window to enter new IP
     def create_ip_window(self) -> None:
