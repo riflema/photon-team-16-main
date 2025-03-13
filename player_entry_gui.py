@@ -385,6 +385,7 @@ class Player_Entry_GUI:
         sync = Button(option_buttons, text='F10' + '\n' + 'Flick' + '\n' + 'Sync', width=10, height=5, bg='black', fg='lime', command=self.flick_sync)
         self.root.bind('<F10>', lambda event: self.flick_sync())
         clear = Button(option_buttons, text='F12' + '\n' + 'Clear' + '\n' + 'Game', width=10, height=5, bg='black', fg='lime', command=self.clear_game)
+        self.root.bind('<F12>', lambda event: self.clear_game())
 
         #Create label showing instructions
         options_width:int = int(self.root.winfo_reqwidth() / 1.35)
