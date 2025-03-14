@@ -3,22 +3,25 @@ from typing import Dict, List
 import sys
 
 class Game_Action_GUI:
-    def __init__(self, red_list:List[str], green_list:List[str]) -> None:
-        self.root = Tk()
+    def __init__(self, rt:Tk, red_list:List[str], green_list:List[str]) -> None:
+        self.root = rt
                         #codename, points
         self.red_team:Dict[str, IntVar] = {}
         for codename in red_list:
             self.red_team[codename] = IntVar()
         self.green_team:Dict[str, IntVar] = {}
         for codename in green_list:
-            self.red_team[codename] = IntVar()
+            self.green_team[codename] = IntVar()
+
+        self.red_total_points = IntVar()
+        self.green_total_points = IntVar()
+        self.time_remaining = StringVar()
+        self.time_remaining.set("0:00")
 
         self.root.title('Game Action')
         self.root.configure(bg='black')
 
         self.create_main()
-
-        self.root.mainloop()
 
     def quit(self) -> None:
         sys.exit()
@@ -32,10 +35,22 @@ class Game_Action_GUI:
         for l in list:
             l.destroy()
 
+    def create_player(self, team_players:Frame, color:str, player:str) -> None:
+        if (color == 'red2'):
+            new_player = Frame(team_players, bg='black', name="red_" + player)
+            new_player.pack()
+            Label(new_player, text=player, bg = 'black', fg=color, font='75').pack(side=LEFT, padx=(0,175))
+            Label(new_player, textvariable=self.red_team[player], bg = 'black', fg=color, font='75').pack(side=RIGHT)
+        if (color == 'green2'):
+            new_player = Frame(team_players, bg='black', name="green_" + player)
+            new_player.pack()
+            Label(new_player, text=player, bg = 'black', fg=color, font='75').pack(side=LEFT, padx=(0,175))
+            Label(new_player, textvariable=self.green_team[player], bg = 'black', fg=color, font='75').pack(side=RIGHT)
+
     #Create each player check box and entry field
     def create_main(self) -> None:
-        game_action = Frame(self.root, bg='black', name="game_action", relief='solid', highlightbackground='yellow', highlightthickness='2')
-        game_action.pack(expand=True)
+        game_action = Frame(self.root.nametowidget(".player_entry"), bg='black', name="game_action", relief='solid', highlightbackground='yellow', highlightthickness='2')
+        game_action.pack(expand=True, side=TOP)
         top_label_frame = Frame(game_action, bg='black', name="top_label_frame")
         top_label_frame.pack()
         Label(top_label_frame, text="XP", bg='black', fg='red', font='75').pack(side=LEFT, padx=(0,800))
@@ -49,20 +64,30 @@ class Game_Action_GUI:
         red_team_players = Frame(red_team_frame, bg='black', name="red_team_players")
         red_team_players.pack()
         for player in self.red_team:
-            Label(red_team_players, text=player, bg = 'black', fg='red4', font='75').pack(side=LEFT, padx=(0,175))
-            Label(red_team_players, textvariable=self.red_team[player], bg = 'black', fg='red4', font='75').pack(side=RIGHT)
-        
+            if (player == ""):
+                break
+            self.create_player(red_team_players, 'red2', player)
+        red_total_frame = Frame(red_team_players, bg='black', name="red_team_total")
+        red_total_frame.pack()
+        Label(red_total_frame, text="Total points: ", bg = 'black', fg='red2', font='75').pack(side=LEFT, padx=(0,175))
+        Label(red_total_frame, textvariable=self.red_total_points, bg = 'black', fg='red2', font='75').pack(side=RIGHT)
         green_team_frame = Frame(players_frame, bg='black', name="green_team_frame")
         green_team_frame.pack(side=RIGHT)
         Label(green_team_frame, text="GREEN TEAM", bg = 'black', fg='lightgray', font='100').pack(padx=(175,175))
         green_team_players = Frame(green_team_frame, bg='black', name="red_team_players")
         green_team_players.pack()
         for player in self.green_team:
-            Label(green_team_players, text=player, bg = 'black', fg='green4', font='75').pack(side=LEFT, padx=(0,175))
-            Label(green_team_players, textvariable=self.green_team[player], bg = 'black', fg='green4', font='75').pack(side=RIGHT)
-
+            if (player == ""):
+                break
+            self.create_player(green_team_players, 'green2', player)
+        green_total_frame = Frame(green_team_players, bg='black', name="green_team_points")
+        green_total_frame.pack()
+        Label(green_total_frame, text="Total points: ", bg = 'black', fg='green2', font='75').pack(side=LEFT, padx=(0,175))
+        Label(green_total_frame, textvariable=self.green_total_points, bg = 'black', fg='green2', font='75').pack(side=RIGHT)
         action_frame = Frame(game_action, bg='darkblue', name="action_frame", relief='solid', highlightbackground='yellow', highlightthickness='2')
         action_frame.pack()
-        Label(action_frame, text="", bg='darkblue').pack(side=LEFT, padx=(0,800))
-        Label(action_frame, text="Current Game Action", bg='darkblue', fg='lightblue', font='75').pack(side=RIGHT)    
-
+        Label(action_frame, text="Current Game Action", bg='darkblue', fg='lightblue', font='75').pack(side=RIGHT, padx=(800,0))    
+        time_remaining_frame = Frame(game_action, bg='black', name="time_remaining_frame", relief='solid', highlightbackground='yellow', highlightthickness='2')
+        time_remaining_frame.pack()
+        Label(time_remaining_frame, text="Time Remaining: ", bg='black', fg='lightgray', font='100').pack(side=LEFT, padx=(800,0))
+        Label(time_remaining_frame, textvariable=self.time_remaining, bg='black', fg='lightgray', font='100').pack(side=LEFT) #implement time remaining

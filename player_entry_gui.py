@@ -295,14 +295,17 @@ class Player_Entry_GUI:
         print("Start game")
         python_udpserver.start(self.ip)
         python_udpclient.sendMessage("202", self.ip)
-        self.root.destroy()
+        self.root.nametowidget(".player_entry.teams").destroy()
+        self.root.nametowidget(".player_entry.instructions").destroy()
+        self.root.nametowidget(".player_entry.game_mode").destroy()
+        self.root.nametowidget(".player_entry.top_edit").destroy()
         red_list:List[str] = []
         for player in range(len(self.red_team)):
             red_list.append(self.red_team[player][0].get())
         green_list:List[str] = []
         for player in range(len(self.green_team)):
             green_list.append(self.green_team[player][0].get())
-        game_action_gui = Game_Action_GUI(red_list, green_list)
+        game_action_gui = Game_Action_GUI(self.root, red_list, green_list)
 
     #Create window to enter new IP
     def create_ip_window(self) -> None:
@@ -353,7 +356,7 @@ class Player_Entry_GUI:
     def create_main(self) -> None:
         #Create frame and top label
         player_entry = Frame(self.root, bg='black', name="player_entry")
-        top_edit = Label(player_entry, text="Edit Current Game", bg='black', fg='royalblue', font='75')
+        top_edit = Label(player_entry, text="Edit Current Game", bg='black', fg='royalblue', font='75', name="top_edit")
         player_entry.pack(expand=True)
         top_edit.pack()
     
@@ -373,7 +376,7 @@ class Player_Entry_GUI:
             self.create_player(self.green_team_entry, 'green4', player_num)
 
         #Create label for game mode
-        game_mode = Label(player_entry, text="Game Mode: Standard public mode", bg='gray30', fg='lightgray')
+        game_mode = Label(player_entry, text="Game Mode: Standard public mode", bg='gray30', fg='lightgray', name="game_mode")
 
         #Create option buttons at bottom
         option_buttons = Frame(player_entry, bg='black')
@@ -398,7 +401,7 @@ class Player_Entry_GUI:
 
         #Create label showing instructions
         options_width:int = int(self.root.winfo_reqwidth() / 1.35)
-        instructions = Label(player_entry, text="<Del> to Delete Player, <Ins> to Manually Insert, or edit codename", width=options_width, bg='lightgray', fg='black')
+        instructions = Label(player_entry, name="instructions", text="<Del> to Delete Player, <Ins> to Manually Insert, or edit codename", width=options_width, bg='lightgray', fg='black')
         self.root.bind('<Insert>', lambda event: self.insert_player())
         self.root.bind('<Delete>', lambda event: self.delete_player())
         self.root.bind('<Up>', lambda event: self.move_up())
