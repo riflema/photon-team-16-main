@@ -379,7 +379,7 @@ class Player_Entry_GUI:
         game_mode = Label(player_entry, text="Game Mode: Standard public mode", bg='gray30', fg='lightgray', name="game_mode")
 
         #Create option buttons at bottom
-        option_buttons = Frame(player_entry, bg='black')
+        option_buttons = Frame(player_entry, bg='black', name='option_buttons')
         edit = Button(option_buttons, text='F1' + '\n' + 'Edit' + '\n' + 'Game', width=10, height=5, bg='black', fg='lime', command=self.edit_game)
         self.root.bind('<F1>', lambda event: self.edit_game())
         param = Button(option_buttons, text='F2' + '\n' + 'Game' + '\n' + 'Parameters', width=10, height=5, bg='black', fg='lime', command=self.game_parameters)
@@ -400,7 +400,7 @@ class Player_Entry_GUI:
         self.root.bind('<F12>', lambda event: self.clear_game())
 
         #Create label showing instructions
-        options_width:int = int(self.root.winfo_reqwidth() / 1.35)
+        options_width:int = int(self.root.winfo_reqwidth() / 1.32)
         instructions = Label(player_entry, name="instructions", text="<Del> to Delete Player, <Ins> to Manually Insert, or edit codename", width=options_width, bg='lightgray', fg='black')
         self.root.bind('<Insert>', lambda event: self.insert_player())
         self.root.bind('<Delete>', lambda event: self.delete_player())
