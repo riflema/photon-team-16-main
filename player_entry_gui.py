@@ -2,6 +2,7 @@ from tkinter import *
 from typing import List, Tuple, Union, Any
 import sys
 from udp_files import python_udpserver, python_udpclient
+from game_action_gui import Game_Action_GUI as Game_Action_GUI
 import psycopg2
 from psycopg2 import sql
 
@@ -356,7 +357,7 @@ class Player_Entry_GUI:
     def create_main(self) -> None:
         #Create frame and top label
         player_entry = Frame(self.root, bg='black', name="player_entry")
-        top_edit = Label(player_entry, text="Edit Current Game", bg='black', fg='royalblue', font='75')
+        top_edit = Label(player_entry, text="Edit Current Game", bg='black', fg='royalblue', font='75', name="top_edit")
         player_entry.pack(expand=True)
         top_edit.pack()
     
@@ -376,10 +377,10 @@ class Player_Entry_GUI:
             self.create_player(self.green_team_entry, 'green4', player_num)
 
         #Create label for game mode
-        game_mode = Label(player_entry, text="Game Mode: Standard public mode", bg='gray30', fg='lightgray')
+        game_mode = Label(player_entry, text="Game Mode: Standard public mode", bg='gray30', fg='lightgray', name="game_mode")
 
         #Create option buttons at bottom
-        option_buttons = Frame(player_entry, bg='black')
+        option_buttons = Frame(player_entry, bg='black', name='option_buttons')
         edit = Button(option_buttons, text='F1' + '\n' + 'Edit' + '\n' + 'Game', width=10, height=5, bg='black', fg='lime', command=self.edit_game)
         self.root.bind('<F1>', lambda event: self.edit_game())
         param = Button(option_buttons, text='F2' + '\n' + 'Game' + '\n' + 'Parameters', width=10, height=5, bg='black', fg='lime', command=self.game_parameters)
@@ -400,8 +401,8 @@ class Player_Entry_GUI:
         self.root.bind('<F12>', lambda event: self.clear_game())
 
         #Create label showing instructions
-        options_width:int = int(self.root.winfo_reqwidth() / 1.35)
-        instructions = Label(player_entry, text="<Del> to Delete Player, <Ins> to Manually Insert, or edit codename", width=options_width, bg='lightgray', fg='black')
+        options_width:int = int(self.root.winfo_reqwidth() / 1.32)
+        instructions = Label(player_entry, name="instructions", text="<Del> to Delete Player, <Ins> to Manually Insert, or edit codename", width=options_width, bg='lightgray', fg='black')
         self.root.bind('<Insert>', lambda event: self.insert_player())
         self.root.bind('<Delete>', lambda event: self.delete_player())
         self.root.bind('<Up>', lambda event: self.move_up())
