@@ -3,5 +3,9 @@ from PIL import Image, ImageTk
 from player_entry_gui import Player_Entry_GUI as Player_Entry_GUI
 
 class Game_Start_Countdown:
-  def __init__(self) -> None
+  def __init__(self) -> None:
+    self.root = tk.TK()
+    self.countdown()
+
+  def countdown() -> None:
     
