@@ -306,7 +306,7 @@ class Player_Entry_GUI:
         green_list:List[str] = []
         for player in range(len(self.green_team)):
             green_list.append(self.green_team[player][0].get())
-        countdown = Game_Start_Countdown()
+        countdown = Game_Start_Countdown(parent_window = self.root)
         game_action_gui = Game_Action_GUI(self.root, red_list, green_list)
 
     #Create window to enter new IP
