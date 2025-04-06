@@ -1,5 +1,6 @@
 from tkinter import *
 from typing import Dict, List
+from pygame import mixer
 import sys
 
 class Game_Action_GUI:
@@ -18,12 +19,17 @@ class Game_Action_GUI:
         self.time_remaining = StringVar()
         self.time_remaining.set("0:00")
 
+        self.mixer.init()
+        self.mixer.music.load('Track01.mp3')
+        self.mixer.music.play(-1) # Play music indefinately
+
         self.root.title('Game Action')
         self.root.configure(bg='black')
 
         self.create_main()
 
     def quit(self) -> None:
+        pygame.quit()
         sys.exit()
 
     #Clear GUI
