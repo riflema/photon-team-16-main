@@ -46,12 +46,12 @@ def handle_client() -> None:
                 # green base has been scored on
                 # if player is on red team, player receives 100 pts & stylized 'B' @ codename
 
-                # link to database for scoring
+                # link to game_action_gui for scoring
 
                 response = f"Player {equipID} scored on GREEN base"
 
             else:                                                       # player hits player
-                # link to database for scoring
+                # link to game_action_gui for scoring
                 
                 response = f"Received equipment ID: {equipID} and {value_2}"
 
