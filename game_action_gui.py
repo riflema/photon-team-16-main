@@ -23,11 +23,8 @@ class Game_Action_GUI:
         self.root.title('Game Action')
         self.root.configure(bg='black')
 
-        random_track = random.randint(1, 9)
-        track: str = f'Track0{str(randomTrack)}.mp3'
         self.mixer.init()
-        self.mixer.music.load(track)
-        self.mixer.music.play(-1) # Play music indefinately
+        self.start_music()
 
         self.create_main()
 
@@ -43,6 +40,12 @@ class Game_Action_GUI:
         list = self.root.grid_slaves()
         for l in list:
             l.destroy()
+
+    def start_music(self) -> None:
+        random_track = random.randint(1, 9)
+        track: str = f'Track0{str(randomTrack)}.mp3'
+        self.mixer.music.load(track)
+        self.mixer.music.play(-1) # Play music indefinately
 
     def create_player(self, team_players:Frame, color:str, player:str) -> None:
         if (color == 'red2'):
