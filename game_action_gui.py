@@ -49,6 +49,16 @@ class Game_Action_GUI:
             Label(new_player, text=player, bg = 'black', fg=color, font='75').pack(side=LEFT, padx=(0,175))
             Label(new_player, textvariable=self.green_team[player], bg = 'black', fg=color, font='75').pack(side=RIGHT)
 
+    #6 Minute Game Timer
+    def start_timer(self, seconds: int) -> None:
+        def countdown(time_left):
+            minutes, secs = divmod(time_left, 60)
+            self.time_remaining.set(f"{minutes}:{secs:02}")
+            if time_left > 0:
+                self.root.after(1000, countdown, time_left - 1)
+        countdown(seconds)
+
+
     #Create each player check box and entry field
     def create_main(self) -> None:
         game_action = Frame(self.root.nametowidget(".player_entry"), bg='black', name="game_action", relief='solid', highlightbackground='yellow', highlightthickness='2')
@@ -105,3 +115,4 @@ class Game_Action_GUI:
         Label(time_remaining_frame, textvariable=self.time_remaining, bg='black', fg='white', font='100').pack(side=LEFT) #implement time remaining
         self.root.nametowidget(".player_entry.option_buttons").pack_forget()
         self.root.nametowidget(".player_entry.option_buttons").pack()
+        self.start_timer(360)
