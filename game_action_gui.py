@@ -2,6 +2,7 @@ from tkinter import *
 from typing import Dict, List
 from pygame import mixer
 import sys
+import random
 
 class Game_Action_GUI:
     def __init__(self, rt:Tk, red_list:List[str], green_list:List[str]) -> None:
@@ -19,12 +20,14 @@ class Game_Action_GUI:
         self.time_remaining = StringVar()
         self.time_remaining.set("0:00")
 
-        self.mixer.init()
-        self.mixer.music.load('Track01.mp3')
-        self.mixer.music.play(-1) # Play music indefinately
-
         self.root.title('Game Action')
         self.root.configure(bg='black')
+
+        random_track = random.randint(1, 9)
+        track: str = f'Track0{str(randomTrack)}.mp3'
+        self.mixer.init()
+        self.mixer.music.load(track)
+        self.mixer.music.play(-1) # Play music indefinately
 
         self.create_main()
 
