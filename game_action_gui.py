@@ -51,7 +51,7 @@ class Game_Action_GUI:
 
     #6 Minute Game Timer
     def start_timer(self, seconds: int) -> None:
-        def countdown(time_left):
+        def countdown(time_left: int) -> None:
             minutes, secs = divmod(time_left, 60)
             self.time_remaining.set(f"{minutes}:{secs:02}")
             if time_left > 0:
