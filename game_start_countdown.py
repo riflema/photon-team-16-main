@@ -11,7 +11,7 @@ class Game_Start_Countdown:
         self.current_num = 0
         # Store as class variable to prevent garbage collection
         self.photos: Dict[str, ImageTk.PhotoImage] = {}
-        self.num = 11
+        self.num = 31
         self.parent = parent
         
     def create_countdown_window(self) -> None:
