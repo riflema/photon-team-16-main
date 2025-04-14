@@ -1,6 +1,8 @@
 from tkinter import *
 from typing import Dict, List
+import pygame
 import sys
+import random
 
 class Game_Action_GUI:
     def __init__(self, rt:Tk, red_list:List[str], green_list:List[str]) -> None:
@@ -21,9 +23,14 @@ class Game_Action_GUI:
         self.root.title('Game Action')
         self.root.configure(bg='black')
 
+        pygame.init()
+        pygame.mixer.init()
+        self.start_music()
+
         self.create_main()
 
     def quit(self) -> None:
+        pygame.quit()
         sys.exit()
 
     #Clear GUI
@@ -34,6 +41,12 @@ class Game_Action_GUI:
         list = self.root.grid_slaves()
         for l in list:
             l.destroy()
+
+    def start_music(self) -> None:
+        random_track = random.randint(1, 9)
+        track: str = f'photon_tracks/Track0{str(random_track)}.mp3'
+        pygame.mixer.music.load(track)
+        pygame.mixer.music.play(-1) # Play music indefinately
 
     def create_player(self, team_players:Frame, color:str, player:str) -> None:
         if (color == 'red2'):
@@ -115,4 +128,6 @@ class Game_Action_GUI:
         Label(time_remaining_frame, textvariable=self.time_remaining, bg='black', fg='white', font='100').pack(side=LEFT) #implement time remaining
         self.root.nametowidget(".player_entry.option_buttons").pack_forget()
         self.root.nametowidget(".player_entry.option_buttons").pack()
+
         self.start_timer(360)
+
