@@ -1,6 +1,6 @@
 from tkinter import *
 from typing import Dict, List
-from pygame import mixer
+import pygame
 import sys
 import random
 
@@ -23,7 +23,8 @@ class Game_Action_GUI:
         self.root.title('Game Action')
         self.root.configure(bg='black')
 
-        self.mixer.init()
+        pygame.init()
+        pygame.mixer.init()
         self.start_music()
 
         self.create_main()
@@ -43,9 +44,9 @@ class Game_Action_GUI:
 
     def start_music(self) -> None:
         random_track = random.randint(1, 9)
-        track: str = f'photon_tracks/Track0{str(randomTrack)}.mp3'
-        self.mixer.music.load(track)
-        self.mixer.music.play(-1) # Play music indefinately
+        track: str = f'photon_tracks/Track0{str(random_track)}.mp3'
+        pygame.mixer.music.load(track)
+        pygame.mixer.music.play(-1) # Play music indefinately
 
     def create_player(self, team_players:Frame, color:str, player:str) -> None:
         if (color == 'red2'):
