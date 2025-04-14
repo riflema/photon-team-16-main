@@ -43,7 +43,7 @@ class Game_Action_GUI:
 
     def start_music(self) -> None:
         random_track = random.randint(1, 9)
-        track: str = f'Track0{str(randomTrack)}.mp3'
+        track: str = f'photon_tracks/Track0{str(randomTrack)}.mp3'
         self.mixer.music.load(track)
         self.mixer.music.play(-1) # Play music indefinately
 
