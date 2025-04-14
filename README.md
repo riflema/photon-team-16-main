@@ -8,7 +8,8 @@ To start Photon Laser Tag,
 4. Install tkinter with ```sudo apt-get install python3-tk```
 5. Install PIL with ```pip install --user pillow```
 6. Install the Python Post-Gre SQL library with ```pip install --user psycopg2-binary```
-7. Navigate to the program folder in terminal and run the program with ```sh ./run.bash```
+7. Install the pygame library with ```pip install pygame```
+8. Navigate to the program folder in terminal and run the program with ```sh ./run.bash```
 
 ---
 ### Team Members:
