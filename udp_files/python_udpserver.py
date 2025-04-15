@@ -37,9 +37,6 @@ def handle_client(game_action_gui:Game_Action_GUI) -> None:
             equipID = msg_parts[0]
             value_2 = int(msg_parts[1])
 
-            if game_action_gui == None:
-                continue
-
             if value_2 == 53:                                         # green scored pts
 
                 # red base has been scored on
