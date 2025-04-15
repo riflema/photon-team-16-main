@@ -71,6 +71,18 @@ class Game_Action_GUI:
                 self.root.after(1000, countdown, time_left - 1)
         countdown(seconds)
 
+    #return button
+    def return_to_player_entry(self) -> None:
+        """Destroy game action widgets and recreate player entry screen."""
+        # Destroy game action widgets
+        self.root.nametowidget(".player_entry.game_action").destroy()
+        
+        # Recreate player entry screen
+        self.root.nametowidget(".player_entry.teams").pack()
+        self.root.nametowidget(".player_entry.instructions").pack()
+        self.root.nametowidget(".player_entry.game_mode").pack()
+        self.root.nametowidget(".player_entry.top_edit").pack()
+
 
     #Create each player check box and entry field
     def create_main(self) -> None:
@@ -80,6 +92,10 @@ class Game_Action_GUI:
         top_label_frame.pack()
         Label(top_label_frame, text="XP", bg='black', fg='red', font='75').pack(side=LEFT, padx=(0,800))
         Label(top_label_frame, text="Current Scores", bg='black', fg='lightblue', font='75').pack(side=RIGHT)
+
+        # Add return button at the top
+        return_button = Button(game_action, text="← Return to Player Entry", command=self.return_to_player_entry, bg='black', fg='white', font=('Arial', 12))
+        return_button.pack(side=TOP, anchor=NW, padx=10, pady=10)
 
         players_frame = Frame(game_action, bg='black', name="players_frame")
         players_frame.pack()
