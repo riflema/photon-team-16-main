@@ -1,6 +1,7 @@
 
 import socket
 import threading
+from game_action_gui import Game_Action_GUI as Game_Action_GUI
 
 bufferSize          = 1024
 msgFromServer       = "Hello UDP Client"            # unused
@@ -8,6 +9,7 @@ bytesToSend         = str.encode(msgFromServer)     # unused
 server_sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)         # Create a UDP socket
 FORMAT = 'utf-8'
 broadcast_addr = ("127.0.0.1", 7500)
+game_action_gui = None
 
 
 # thread action: handle_client() - wait for mesages from clients
@@ -31,6 +33,8 @@ def handle_client() -> None:
             msg_parts = msg.split(":")
             equipID = msg_parts[0]
             value_2 = msg_parts[1]
+            if game_action_gui == None:
+                continue
 
             if value_2 == 53:                                         # green scored pts
 
@@ -39,6 +43,7 @@ def handle_client() -> None:
 
                 # link to database for scoring
 
+                game_action_gui.add_new_base_hit(int(equipID), 0)
                 response = f"Player {equipID} scored on RED base"
 
             elif value_2 == 43:                                       # red scored pts
@@ -48,11 +53,13 @@ def handle_client() -> None:
 
                 # link to game_action_gui for scoring
 
+                game_action_gui.add_new_base_hit(int(equipID), 1)
                 response = f"Player {equipID} scored on GREEN base"
 
             else:                                                       # player hits player
                 # link to game_action_gui for scoring
                 
+                game_action_gui.add_new_hit(int(equipID), int(value_2))
                 response = f"Received equipment ID: {equipID} and {value_2}"
 
 
@@ -62,9 +69,10 @@ def handle_client() -> None:
             print(f"Sent [{response}] to {addr}")
         
 
-def start(ip:str = "127.0.0.1", port:int = 7501) -> None:
+def start(new_gui:Game_Action_GUI, ip:str = "127.0.0.1", port:int = 7501) -> None:
     server_sock.bind((ip, port))                                      # bind socket
     print(f"Listening for UDP packets on {ip}:{port}")
+    game_action_gui = new_gui
 
     # Receive data from client, but in a thread
     thread = threading.Thread(target=handle_client)

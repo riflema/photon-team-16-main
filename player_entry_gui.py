@@ -294,8 +294,6 @@ class Player_Entry_GUI:
     #Placeholder for "Start Game" function
     def start_game(self) -> None:
         print("Start game")
-        python_udpserver.start(self.ip)
-        python_udpclient.sendMessage("202", self.ip)
         self.root.nametowidget(".player_entry.teams").destroy()
         self.root.nametowidget(".player_entry.instructions").destroy()
         self.root.nametowidget(".player_entry.game_mode").destroy()
@@ -308,6 +306,8 @@ class Player_Entry_GUI:
             green_list.append(self.green_team[player][0].get())
         countdown = Game_Start_Countdown(parent_window = self.root)
         game_action_gui = Game_Action_GUI(self.root, red_list, green_list)
+        python_udpserver.start(game_action_gui, self.ip)
+        python_udpclient.sendMessage("202", self.ip)
 
     #Create window to enter new IP
     def create_ip_window(self) -> None:

@@ -1,6 +1,15 @@
 from tkinter import *
-from typing import Dict, List
+from typing import Dict, List, Union
 import sys
+import psycopg2
+
+connection_params = {
+    'dbname': 'photon',
+    'user': 'student',
+    #'password': 'student',
+    #'host': 'localhost',
+    #'port': '5432'
+}
 
 class Game_Action_GUI:
     def __init__(self, rt:Tk, red_list:List[str], green_list:List[str]) -> None:
@@ -17,6 +26,7 @@ class Game_Action_GUI:
         self.green_total_points = IntVar()
         self.time_remaining = StringVar()
         self.time_remaining.set("0:00")
+        self.events_frame = None
 
         self.root.title('Game Action')
         self.root.configure(bg='black')
@@ -48,6 +58,85 @@ class Game_Action_GUI:
             new_player.pack()
             Label(new_player, text=player, bg = 'black', fg=color, font='75').pack(side=LEFT, padx=(0,175))
             Label(new_player, textvariable=self.green_team[player], bg = 'black', fg=color, font='75').pack(side=RIGHT)
+    
+    def query_codename_database(self, player_id:int) -> Union[str, None]:
+        try:
+            conn = psycopg2.connect(**connection_params)
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT version();")
+            version = cursor.fetchone()
+            print(f"Connected to - {version}")
+
+            cursor.execute('''SELECT * FROM players WHERE id = (%s);
+            ''', (player_id,))
+            player = cursor.fetchone()
+
+            if (player != None):
+                return str(player[1])
+            else:
+                return None
+
+        except Exception as error:
+            print(f"Error connecting to PostgreSQL database: {error}")
+
+        finally:
+            # Close the cursor and connection
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+        return None
+
+    def add_new_hit(self, first_id:int, second_id:int) -> None:
+        first_codename:Union[str, None] = self.query_codename_database(first_id)
+        if (first_codename == None):
+            first_codename = ""
+        second_codename:Union[str, None] = self.query_codename_database(second_id)
+        if (second_codename == None):
+            second_codename = ""
+        color_1:int = -1 #0 red 1 green
+        color_2:int = -1
+        for player in self.red_team:
+            if player == first_codename:
+                color_1 = 0
+            if player == second_codename:
+                color_2 = 0
+        for player in self.green_team:
+            if player == first_codename:
+                color_1 = 1
+            if player == second_codename:
+                color_2 = 1
+        if color_1 == color_2:
+            if color_1 == 0:
+                self.red_team[first_codename].set(self.red_team[player].get() - 10)
+            if color_1 == 1:
+                self.green_team[first_codename].set(self.green_team[player].get() - 10)
+        else:
+            if color_1 == 0:
+                self.red_team[first_codename].set(self.red_team[player].get() + 10)
+            if color_1 == 1:
+                self.green_team[first_codename].set(self.green_team[player].get() + 10)
+        Label(self.event_frame, text=(first_codename + " hit " + second_codename), bg='darkblue', fg='white', font='75').pack(side=LEFT)
+
+    def add_new_base_hit(self, equip_id:int, color:int) -> None:
+        codename:Union[str, None] = self.query_codename_database(equip_id)
+        if (codename == None):
+            codename = ""
+        for player in self.red_team:
+            if player == codename:
+                self.red_team[player].set(self.red_team[player].get() + 100)
+                break
+                #add stylized B
+        for player in self.green_team:
+            if player == codename:
+                self.green_team[player].set(self.green_team[player].get() + 100)
+                break
+                #add stylized B
+        if (color == 0): #red
+            Label(self.event_frame, text=(codename + " hit Red Base"), bg='darkblue', fg='white', font='75').pack(side=LEFT)
+        if (color == 1): #green
+            Label(self.event_frame, text=(codename + " hit Green Base"), bg='darkblue', fg='white', font='75').pack(side=LEFT)
 
     #Create each player check box and entry field
     def create_main(self) -> None:
@@ -95,9 +184,9 @@ class Game_Action_GUI:
         #action_top_frame = Frame(action_frame, bg='darkblue', name="action_top_frame")
         #action_top_frame.pack()
         Label(action_frame, text="Current Game Action", bg='darkblue', fg='lightblue', font='75').pack(padx=(800,0))    
-        events_frame = Frame(action_frame, height=200, width=1000, bg='darkblue', name='events_frame')
-        events_frame.pack_propagate(False)
-        events_frame.pack()
+        self.event_frame = Frame(action_frame, height=200, width=1000, bg='darkblue', name='events_frame')
+        self.event_frame.pack_propagate(False)
+        self.event_frame.pack()
         time_remaining_frame = Frame(game_action, height=25, width=1000, bg='black', name="time_remaining_frame", relief='solid', highlightbackground='yellow', highlightthickness='2')
         time_remaining_frame.pack_propagate(False)
         time_remaining_frame.pack()
