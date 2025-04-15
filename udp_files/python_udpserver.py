@@ -10,11 +10,10 @@ server_sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)      
 server_bound = 0
 FORMAT = 'utf-8'
 broadcast_addr = ("127.0.0.1", 7500)
-game_action_gui = None
 
 
 # thread action: handle_client() - wait for mesages from clients
-def handle_client() -> None:
+def handle_client(game_action_gui:Game_Action_GUI) -> None:
     while True:
         msg, addr = server_sock.recvfrom(bufferSize)
         print(f"Received message [{msg.decode(FORMAT)}] from [{addr}]")
@@ -85,5 +84,5 @@ def start(new_gui:Game_Action_GUI, ip:str = "127.0.0.1", port:int = 7501) -> Non
         print(f"Listening for UDP packets on {ip}:{port}")
         
         # Receive data from client, but in a thread
-        thread = threading.Thread(target=handle_client)
+        thread = threading.Thread(target=handle_client, args=(game_action_gui,))
         thread.start()
