@@ -145,5 +145,5 @@ class Game_Action_GUI:
         self.root.nametowidget(".player_entry.option_buttons").pack_forget()
         self.root.nametowidget(".player_entry.option_buttons").pack()
 
-        self.start_timer(360)
+        self.start_timer(390)
 
