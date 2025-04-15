@@ -7,6 +7,7 @@ bufferSize          = 1024
 msgFromServer       = "Hello UDP Client"            # unused
 bytesToSend         = str.encode(msgFromServer)     # unused
 server_sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)         # Create a UDP socket
+server_bound = 0
 FORMAT = 'utf-8'
 broadcast_addr = ("127.0.0.1", 7500)
 game_action_gui = None
@@ -16,13 +17,16 @@ game_action_gui = None
 def handle_client() -> None:
     while True:
         msg, addr = server_sock.recvfrom(bufferSize)
-        msg = msg.decode(FORMAT)
-        print(f"Received message [{msg}] from [{addr}]")
+        print(f"Received message [{msg.decode(FORMAT)}] from [{addr}]")
 
-        if msg.count(":") <= 0:                                         # received only equipment ID
-            equipID = msg
+        msg_2 = msg.decode(FORMAT)
 
-            response = f"Received equipment ID: {equipID}"
+        has_colon = msg_2.count(':')
+
+        if has_colon > 0:                        # received only equipment ID
+            equipID = msg_2
+
+            response = (f"Received equipment ID: {equipID}")
 
             # return to sender
             server_sock.sendto(response.encode(FORMAT), broadcast_addr)
@@ -30,9 +34,10 @@ def handle_client() -> None:
             print(f"Sent [{response}] to {addr}")
 
         else:
-            msg_parts = msg.split(":")
+            msg_parts = msg_2.split(':')
             equipID = msg_parts[0]
-            value_2 = msg_parts[1]
+            value_2 = int(msg_parts[1])
+
             if game_action_gui == None:
                 continue
 
@@ -44,7 +49,7 @@ def handle_client() -> None:
                 # link to database for scoring
 
                 game_action_gui.add_new_base_hit(int(equipID), 0)
-                response = f"Player {equipID} scored on RED base"
+                response = (f"Player {equipID} scored on RED base")
 
             elif value_2 == 43:                                       # red scored pts
 
@@ -54,13 +59,13 @@ def handle_client() -> None:
                 # link to game_action_gui for scoring
 
                 game_action_gui.add_new_base_hit(int(equipID), 1)
-                response = f"Player {equipID} scored on GREEN base"
+                response = (f"Player {equipID} scored on GREEN base")
 
             else:                                                       # player hits player
                 # link to game_action_gui for scoring
                 
                 game_action_gui.add_new_hit(int(equipID), int(value_2))
-                response = f"Received equipment ID: {equipID} and {value_2}"
+                response = (f"Received equipment ID: {equipID} and {str(value_2)}")
 
 
             # broadcast response for traffic generator
@@ -70,10 +75,15 @@ def handle_client() -> None:
         
 
 def start(new_gui:Game_Action_GUI, ip:str = "127.0.0.1", port:int = 7501) -> None:
-    server_sock.bind((ip, port))                                      # bind socket
-    print(f"Listening for UDP packets on {ip}:{port}")
+    global server_bound
+
     game_action_gui = new_gui
 
-    # Receive data from client, but in a thread
-    thread = threading.Thread(target=handle_client)
-    thread.start()
+    if server_bound == 0:
+        server_bound = 1
+        server_sock.bind((ip, port))                                      # bind socket
+        print(f"Listening for UDP packets on {ip}:{port}")
+        
+        # Receive data from client, but in a thread
+        thread = threading.Thread(target=handle_client)
+        thread.start()
