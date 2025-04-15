@@ -29,10 +29,10 @@ print ("waiting for start from game_software")
 
 received_data = ' '
 while received_data != '202':
-	received_data_1, address = UDPServerSocketReceive.recvfrom(bufferSize)
-
-received_data = str(received_data_1)
-print(f"Received from game software: {received_data}")
+    received_data_1, address = UDPServerSocketReceive.recvfrom(bufferSize)
+    received_data = received_data_1.decode('utf-8')
+    
+    print("Received from game software: " + received_data)
 
 print ('')
 
@@ -67,10 +67,10 @@ while True:
 	# receive answer from game softare
 	
 	
-	received_data_1, address = UDPServerSocketReceive.recvfrom(bufferSize)
-	received_data = received_data_1.decode('utf-8')
-	print ("Received from game software: " + received_data)
+	received_data, address = UDPServerSocketReceive.recvfrom(bufferSize)
+	print ("Received from game software: " + received_data.decode('utf-8'))
 	print ('')
+
 	counter = counter + 1
 	if received_data == '221':
 		break
