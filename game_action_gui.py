@@ -2,6 +2,8 @@ from tkinter import *
 from typing import Dict, List, Union
 import sys
 import psycopg2
+import random
+import pygame
 
 connection_params = {
     'dbname': 'photon',
@@ -33,9 +35,14 @@ class Game_Action_GUI:
         self.root.title('Game Action')
         self.root.configure(bg='black')
 
+        pygame.init()
+        pygame.mixer.init()
+        self.start_music()
+
         self.create_main()
 
     def quit(self) -> None:
+        pygame.quit()
         sys.exit()
 
     #Clear GUI
@@ -46,6 +53,12 @@ class Game_Action_GUI:
         list = self.root.grid_slaves()
         for l in list:
             l.destroy()
+
+    def start_music(self) -> None:
+        random_track = random.randint(1, 9)
+        track: str = f'photon_tracks/Track0{str(random_track)}.mp3'
+        pygame.mixer.music.load(track)
+        pygame.mixer.music.play(-1) # Play music indefinately
 
     def create_player(self, team_players:Frame, color:str, player:str) -> None:
         if (color == 'red2'):
@@ -161,6 +174,28 @@ class Game_Action_GUI:
             Label(self.event_frame, text=(codename + " hit Green Base"), bg='darkblue', fg='white', font='75', name=("event_" + str(self.event_counter))).pack()
             self.root.nametowidget(".player_entry.game_action.players_frame.red_team_frame.red_team_players.red_" + codename.replace(" ", "") + "." + codename.replace(" ", "").lower()).configure(image=self.B)
 
+    #6 Minute Game Timer
+    def start_timer(self, seconds: int) -> None:
+        def countdown(time_left: int) -> None:
+            minutes, secs = divmod(time_left, 60)
+            self.time_remaining.set(f"{minutes}:{secs:02}")
+            if time_left > 0:
+                self.root.after(1000, countdown, time_left - 1)
+        countdown(seconds)
+
+    #return button
+    def return_to_player_entry(self) -> None:
+        """Destroy game action widgets and recreate player entry screen."""
+        # Destroy game action widgets
+        self.root.nametowidget(".player_entry.game_action").destroy()
+        
+        # Recreate player entry screen
+        self.root.nametowidget(".player_entry.teams").pack()
+        self.root.nametowidget(".player_entry.instructions").pack()
+        self.root.nametowidget(".player_entry.game_mode").pack()
+        self.root.nametowidget(".player_entry.top_edit").pack()
+
+
     #Create each player check box and entry field
     def create_main(self) -> None:
         game_action = Frame(self.root.nametowidget(".player_entry"), bg='black', name="game_action", relief='solid', highlightbackground='yellow', highlightthickness='2')
@@ -169,6 +204,10 @@ class Game_Action_GUI:
         top_label_frame.pack()
         Label(top_label_frame, text="XP", bg='black', fg='red', font='75').pack(side=LEFT, padx=(0,800))
         Label(top_label_frame, text="Current Scores", bg='black', fg='lightblue', font='75').pack(side=RIGHT)
+
+        # Add return button at the top
+        return_button = Button(game_action, text="← Return to Player Entry", command=self.return_to_player_entry, bg='black', fg='white', font=('Arial', 12))
+        return_button.pack(side=TOP, anchor=NW, padx=10, pady=10)
 
         players_frame = Frame(game_action, bg='black', name="players_frame")
         players_frame.pack()
@@ -217,3 +256,6 @@ class Game_Action_GUI:
         Label(time_remaining_frame, textvariable=self.time_remaining, bg='black', fg='white', font='100').pack(side=LEFT) #implement time remaining
         self.root.nametowidget(".player_entry.option_buttons").pack_forget()
         self.root.nametowidget(".player_entry.option_buttons").pack()
+
+        self.start_timer(390)
+
