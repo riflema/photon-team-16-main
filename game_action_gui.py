@@ -34,6 +34,7 @@ class Game_Action_GUI:
         self.events_frame = None
         self.event_counter:int = 0
         self.B = PhotoImage(file="gui_sprites/B_image.png")
+        self.ip = "127.0.0.1"
 
         self.root.title('Game Action')
         self.root.configure(bg='black')
