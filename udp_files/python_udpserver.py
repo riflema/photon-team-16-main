@@ -22,7 +22,7 @@ def handle_client(game_action_gui:Game_Action_GUI) -> None:
 
         has_colon = msg_2.count(':')
 
-        if has_colon > 0:                        # received only equipment ID
+        if has_colon <= 0:                        # received only equipment ID
             equipID = msg_2
 
             response = (f"Received equipment ID: {equipID}")
