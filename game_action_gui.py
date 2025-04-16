@@ -1,8 +1,17 @@
 from tkinter import *
-from typing import Dict, List
-import pygame
+from typing import Dict, List, Union
 import sys
+import psycopg2
 import random
+import pygame
+
+connection_params = {
+    'dbname': 'photon',
+    'user': 'student',
+    #'password': 'student',
+    #'host': 'localhost',
+    #'port': '5432'
+}
 
 class Game_Action_GUI:
     def __init__(self, rt:Tk, red_list:List[str], green_list:List[str]) -> None:
@@ -19,6 +28,9 @@ class Game_Action_GUI:
         self.green_total_points = IntVar()
         self.time_remaining = StringVar()
         self.time_remaining.set("0:00")
+        self.events_frame = None
+        self.event_counter:int = 0
+        self.B = PhotoImage(file="gui_sprites/B_image.png")
 
         self.root.title('Game Action')
         self.root.configure(bg='black')
@@ -50,17 +62,117 @@ class Game_Action_GUI:
 
     def create_player(self, team_players:Frame, color:str, player:str) -> None:
         if (color == 'red2'):
-            new_player = Frame(team_players, height=20, width=300, bg='black', name="red_" + player)
+            new_player = Frame(team_players, height=20, width=300, bg='black', name="red_" + player.replace(" ", ""))
             new_player.pack_propagate(False)
             new_player.pack()
+            Label(new_player, bg='black', fg=color, name=player.replace(" ", "").lower()).pack(side=LEFT)
             Label(new_player, text=player, bg = 'black', fg=color, font='75').pack(side=LEFT, padx=(0,175))
             Label(new_player, textvariable=self.red_team[player], bg = 'black', fg=color, font='75').pack(side=RIGHT)
         if (color == 'green2'):
-            new_player = Frame(team_players, height=20, width=300, bg='black', name="green_" + player)
+            new_player = Frame(team_players, height=20, width=300, bg='black', name="green_" + player.replace(" ", ""))
             new_player.pack_propagate(False)
             new_player.pack()
+            Label(new_player, bg='black', fg=color, name=player.replace(" ", "").lower()).pack(side=LEFT)
             Label(new_player, text=player, bg = 'black', fg=color, font='75').pack(side=LEFT, padx=(0,175))
             Label(new_player, textvariable=self.green_team[player], bg = 'black', fg=color, font='75').pack(side=RIGHT)
+    
+    def query_codename_database(self, player_id:int) -> Union[str, None]:
+        try:
+            conn = psycopg2.connect(**connection_params)
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT version();")
+            version = cursor.fetchone()
+            print(f"Connected to - {version}")
+
+            cursor.execute('''SELECT * FROM players WHERE id = (%s);
+            ''', (player_id,))
+            player = cursor.fetchone()
+
+            if (player != None):
+                return str(player[1])
+            else:
+                return None
+
+        except Exception as error:
+            print(f"Error connecting to PostgreSQL database: {error}")
+
+        finally:
+            # Close the cursor and connection
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+        return None
+
+    def add_new_hit(self, first_id:int, second_id:int) -> None:
+        first_codename:Union[str, None] = self.query_codename_database(first_id)
+        if (first_codename == None):
+            first_codename = ""
+        second_codename:Union[str, None] = self.query_codename_database(second_id)
+        if (second_codename == None):
+            second_codename = ""
+        color_1:int = -1 #0 red 1 green
+        color_2:int = -1
+        for player in self.red_team:
+            if player == first_codename:
+                color_1 = 0
+            if player == second_codename:
+                color_2 = 0
+        for player in self.green_team:
+            if player == first_codename:
+                color_1 = 1
+            if player == second_codename:
+                color_2 = 1
+        if color_1 == color_2:
+            if color_1 == 0:
+                self.red_team[first_codename].set(self.red_team[first_codename].get() - 10)
+                self.red_total_points.set(self.red_total_points.get() - 10)
+            if color_1 == 1:
+                self.green_team[first_codename].set(self.green_team[first_codename].get() - 10)
+                self.green_total_points.set(self.green_total_points.get() - 10)
+        else:
+            if color_1 == 0:
+                self.red_team[first_codename].set(self.red_team[first_codename].get() + 10)
+                self.red_total_points.set(self.red_total_points.get() + 10)
+            if color_1 == 1:
+                self.green_team[first_codename].set(self.green_team[first_codename].get() + 10)
+                self.green_total_points.set(self.green_total_points.get() + 10)
+        list = self.event_frame.pack_slaves()
+        if len(self.event_frame.pack_slaves()) >= 9:
+            list[0].destroy()
+        self.event_counter += 1
+        Label(self.event_frame, text=(first_codename + " hit " + second_codename), bg='darkblue', fg='white', font='75', name=("event_" + str(self.event_counter))).pack()
+
+    def add_new_base_hit(self, equip_id:int, color:int) -> None:
+        codename:Union[str, None] = self.query_codename_database(equip_id)
+        if (codename == None):
+            codename = ""
+        for player in self.red_team:
+            if player == codename:
+                current_score_1:int = self.red_team[player].get()
+                self.red_team[player].set(current_score_1 + 100)
+                self.red_total_points.set(self.red_total_points.get() + 100)
+                break
+                #add stylized B
+        for player in self.green_team:
+            if player == codename:
+                current_score_2:int = self.green_team[player].get()
+                self.green_team[player].set(current_score_2 + 100)
+                self.green_total_points.set(self.green_total_points.get() + 100)
+                break
+                #add stylized B
+        list = self.event_frame.pack_slaves()
+        if len(self.event_frame.pack_slaves()) >= 9:
+            list[0].destroy()
+        self.event_counter += 1
+        
+        if (color == 0): #red
+            Label(self.event_frame, text=(codename + " hit Red Base"), bg='darkblue', fg='white', font='75', name=("event_" + str(self.event_counter))).pack()
+            self.root.nametowidget(".player_entry.game_action.players_frame.green_team_frame.green_team_players.green_" + codename.replace(" ", "") + "." + codename.replace(" ", "").lower()).configure(image=self.B)
+        if (color == 1): #green
+            Label(self.event_frame, text=(codename + " hit Green Base"), bg='darkblue', fg='white', font='75', name=("event_" + str(self.event_counter))).pack()
+            self.root.nametowidget(".player_entry.game_action.players_frame.red_team_frame.red_team_players.red_" + codename.replace(" ", "") + "." + codename.replace(" ", "").lower()).configure(image=self.B)
 
     #6 Minute Game Timer
     def start_timer(self, seconds: int) -> None:
@@ -134,9 +246,9 @@ class Game_Action_GUI:
         #action_top_frame = Frame(action_frame, bg='darkblue', name="action_top_frame")
         #action_top_frame.pack()
         Label(action_frame, text="Current Game Action", bg='darkblue', fg='lightblue', font='75').pack(padx=(800,0))    
-        events_frame = Frame(action_frame, height=200, width=1000, bg='darkblue', name='events_frame')
-        events_frame.pack_propagate(False)
-        events_frame.pack()
+        self.event_frame = Frame(action_frame, height=200, width=1000, bg='darkblue', name='events_frame')
+        self.event_frame.pack_propagate(False)
+        self.event_frame.pack(side=LEFT)
         time_remaining_frame = Frame(game_action, height=25, width=1000, bg='black', name="time_remaining_frame", relief='solid', highlightbackground='yellow', highlightthickness='2')
         time_remaining_frame.pack_propagate(False)
         time_remaining_frame.pack()
