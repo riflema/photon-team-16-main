@@ -5,6 +5,7 @@ import sys
 import psycopg2
 import random
 import pygame
+import time
 import threading
 
 connection_params = {
