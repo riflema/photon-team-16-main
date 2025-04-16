@@ -4,6 +4,7 @@ import sys
 import psycopg2
 import random
 import pygame
+import threading
 
 connection_params = {
     'dbname': 'photon',
@@ -38,7 +39,8 @@ class Game_Action_GUI:
         pygame.init()
         pygame.mixer.init()
         self.start_music()
-
+        thread = threading.Thread(target=self.start_music)
+        
         self.create_main()
 
     def quit(self) -> None:
@@ -55,6 +57,7 @@ class Game_Action_GUI:
             l.destroy()
 
     def start_music(self) -> None:
+        time.sleep(15)        
         random_track = random.randint(1, 9)
         track: str = f'photon_tracks/Track0{str(random_track)}.mp3'
         pygame.mixer.music.load(track)
