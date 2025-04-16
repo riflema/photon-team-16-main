@@ -1,5 +1,6 @@
 from tkinter import *
 from typing import Dict, List, Union
+from udp_files import python_udpclient
 import sys
 import psycopg2
 import random
@@ -184,6 +185,10 @@ class Game_Action_GUI:
             self.time_remaining.set(f"{minutes}:{secs:02}")
             if time_left > 0:
                 self.root.after(1000, countdown, time_left - 1)
+            else:
+                for i in range(0,3):
+                    python_udpclient.sendMessage("221", self.ip)
+                    time.sleep(10)
         countdown(seconds)
 
     #return button
@@ -197,6 +202,10 @@ class Game_Action_GUI:
         self.root.nametowidget(".player_entry.instructions").pack()
         self.root.nametowidget(".player_entry.game_mode").pack()
         self.root.nametowidget(".player_entry.top_edit").pack()
+
+        for i in range(0,3):
+            python_udpclient.sendMessage("221", self.ip)
+            time.sleep(10)
 
 
     #Create each player check box and entry field
