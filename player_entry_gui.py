@@ -294,10 +294,10 @@ class Player_Entry_GUI:
     #Placeholder for "Start Game" function
     def start_game(self) -> None:
         print("Start game")
-        self.root.nametowidget(".player_entry.teams").destroy()
-        self.root.nametowidget(".player_entry.instructions").destroy()
-        self.root.nametowidget(".player_entry.game_mode").destroy()
-        self.root.nametowidget(".player_entry.top_edit").destroy()
+        self.root.nametowidget(".player_entry.teams").pack_forget()
+        self.root.nametowidget(".player_entry.instructions").pack_forget()
+        self.root.nametowidget(".player_entry.game_mode").pack_forget()
+        self.root.nametowidget(".player_entry.top_edit").pack_forget()
         red_list:List[str] = []
         for player in range(len(self.red_team)):
             red_list.append(self.red_team[player][0].get())
