@@ -16,7 +16,7 @@ To start Photon Laser Tag,
 |Name            |Username         |
 |  ---           |  ---:           |
 |Brian Devaney   |  bdevaney5      |
-|Claire Wilkins  |  riflema        |
+|Emily Wilkins  |  emilywilk33        |
 |Frank Luceri    |  Frank-Luceri   |
 |Nick Williams   |  njw7878        |
 |Zachary Kessler |  zacharykess    |
